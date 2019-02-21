@@ -7,12 +7,12 @@ other installation options: https://github.com/allenai/allennlp#installation
 Usage for Semantic Role Labeling:
 python3 allennlp_models.py \
     https://s3-us-west-2.amazonaws.com/allennlp/models/srl-model-2018.02.27.tar.gz \
-    biased_sentences.json --output-file biased_sentences_srl.json
+    test_dataset.json --output-file biased_sentences_srl.json
 
 Usage for Co-reference Resolution:
 python3 allennlp_models.py \
     https://s3-us-west-2.amazonaws.com/allennlp/models/coref-model-2018.02.05.tar.gz \
-    biased_sentences.json --output-file biased_sentences_coref.json
+    test_dataset.json --output-file test_dataset_coref.json
 """
 
 from allennlp.predictors import Predictor

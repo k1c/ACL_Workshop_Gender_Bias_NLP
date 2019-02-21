@@ -9,7 +9,7 @@ import pandas as pd
 #nltk.download('tagsets')
 
 #returns a data frame
-df = pd.read_json("./biased_sentences_coref.json",lines=True)
+df = pd.read_json("./test_dataset_coref.json",lines=True)
 
 print(df.columns)
 print(df.size)

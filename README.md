@@ -11,7 +11,7 @@ https://genderbiasnlp.talp.cat/
     - Book Corpus Dataloader
     - UMBC Dataloader
 
-3) allennlp_models.py: Run `[your_dataset].json` through allenNLP Coreference model. This will output a json file `[your_dataset]_coref.json`
+3) allennlp_models.py: Run `[your_dataset].*` through allenNLP Coreference model. This will output a json file `[your_dataset]_coref.json`
 
 ```
 pip3 install allennlp
