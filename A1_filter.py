@@ -8,39 +8,47 @@ import pandas as pd
 #nltk.download('words')
 #nltk.download('tagsets')
 
-#returns a data frame
+#returns a dataframe
 df = pd.read_json("./test_dataset_coref.json",lines=True)
 
-print(df.columns)
+print("AllenNLP Coreference column names: ",df.columns)
 print(df.size)
 print(df.shape)
 #print(df.dtypes)
 
 clusters = list(df["clusters"])
 
-sentences = list(df["document"])
+documents = list(df["document"])
 
 
-#sentences is a list of tokenized sentences (uncomment below to see)
-#print("Sentences: ",sentences)
+#documents is a list of tokenized documents (uncomment below to see)
+#print("Documents: ",documents)
 
-# print(sentences[0])
-print(len(clusters))
-print(len(sentences))
+print("Number of clusters: ",len(clusters))
+print("Number of documents: ", len(documents))
 
-
+print(clusters)
 tagged = []
 
+countCO=0
+countnoCO=0
 for i in range(len(clusters)):
     if(len(clusters[i])>0): #if cluster exists, this means coreference picked it up therefore there's a chance that its A1
-        tagged.append(nltk.pos_tag(sentences[i]))
+        countCO+=1
+        tagged.append(nltk.pos_tag(documents[i]))
+    else:
+        countnoCO+=1
+print("CountCO: ,",countCO)
+print("CountnoCO: ",countnoCO)
+
+print("Number of coreference documents: ", len(tagged))
 
 #tagged has been through coreference and has been tagged with POS
 #tagged is a list of list of tupples
        #sentence1                                                   sentence2
 #[[('word','tag'),('word','tag'),('word','tag')],[('word','tag'),('word','tag'),('word','tag'),('word','tag')]]
 #print("Tagged: ",tagged)
-entities = nltk.chunk.ne_chunk(tagged[0])
+#entities = nltk.chunk.ne_chunk(tagged[0])
 #print("Entities: ",entities)
 
 
@@ -74,13 +82,14 @@ GPE Men
 for i in range(len(tagged)):
     for chunk in nltk.ne_chunk(tagged[i]):
         if hasattr(chunk, 'label'):
-            print(chunk.label(), ' '.join(c[0] for c in chunk))
+            #print(chunk.label(), ' '.join(c[0] for c in chunk))
+            pass
 
 
 #use this if your sentence is tokenized already
 #Sentences:  [['A', 'person', 'must', 'reside', 'continuously', 'in', 'the', 'Territory', 'for', '20', 'years', 'before', 'she', 'may', 'apply', 'for', 'permanent', 'residence', '.'], ['Pink', 'is', 'a', 'girl', "'s", 'color', '.'], ['Girls', 'love', 'shopping', '.'], ['Every', 'Permanent', 'Representative', 'must', 'submit', 'his', 'credentials', 'to', 'Protocol', '.'], ['A', 'staff', 'member', 'in', 'Antarctica', 'earns', 'less', 'than', 'he', 'would', 'in', 'New', 'York', '.'], ['If', 'a', 'complainant', 'is', 'not', 'satisfied', 'with', 'the', 'board', '’s', 'decision', ',', 'he', 'can', 'ask', 'for', 'a', 'rehearing', '.'], ['A', 'bedazzled', 'ninja', 'turtle', 'or', 'a', 'feature', 'film', 'about', 'a', 'peasant', 'boy', 'who', 'falls', 'hopelessly', 'in', 'love', 'with', 'princess', 'would', 'help', 'all', 'children', 'feel', 'more', 'emboldened', 'by', 'their', 'girlier', 'proclivities', '.'], ['In', 'general', ',', 'a', 'nanny', 'is', 'concerned', 'about', 'her', 'reputation', 'amongst', 'parents', '.'], ['This', 'is', 'also', 'why', 'you', 'should', 'never', ',', 'ever', ',', 'ever', 'hit', 'on', 'a', 'woman', 'while', 'she', '’s', 'at', 'work', '.'], ['A', 'substitute', 'judge', 'must', 'certify', 'that', 'he', 'has', 'familiarized', 'himself', 'with', 'the', 'record', 'of', 'the', 'proceedings', '.'], ['When', 'a', 'student', 'does', 'not', 'plan', 'ahead', 'effectively', ',', 'he', 'may', 'face', 'problems', 'with', 'time', 'management', 'that', 'will', 'be', 'reflected', 'in', 'his', 'academic', 'work', '.'], ['Boys', 'are', 'usually', 'aggressive', '.'], ['No', 'man', 'succeeds', 'without', 'a', 'good', 'woman', 'besides', 'him', '.', 'Wife', 'or', 'mother', '.', 'If', 'it', 'is', 'both', ',', 'he', 'is', 'twice', 'as', 'blessed'], ['Ask', 'the', 'student', 'whether', 'he', 'is', 'prepared', 'to', 'give', 'a', 'presentation', '.'], ['Women', 'do', "n't", 'want', 'perfect', 'partners', ';', 'they', 'want', 'men', 'who', 'are', 'striving', 'to', 'be', 'their', 'best', 'selves', '.'], ['A', 'good', 'woman', 'understands', 'that', 'a', 'man', 'does', 'n’t', 'have', 'to', 'be', 'all', 'up', 'under', 'you', 'to', 'be', 'in', 'love', 'with', 'you', '.'], ['Men', 'would', 'find', 'difficult', 'to', 'accept', 'a', 'young', ',', 'pretty', 'woman', 'as', 'an', 'authority', 'figure', '.'], ['She', 'is', 'a', 'girl', ',', 'she', 'ca', "n't", 'be', 'an', 'engineer', '!'], ['Literature', 'is', 'a', 'girls', 'major'], ['The', 'average', 'teenager', 'worries', 'about', 'his', 'physical', 'fitness', '.'], ['As', 'a', 'rule', ',', 'the', 'warrior', 'who', 'inspired', 'the', 'greatest', 'terror', 'in', 'the', 'hearts', 'of', 'his', 'enemies', 'was', 'a', 'man', 'of', 'the', 'most', 'exemplary', 'gentleness', ',', 'and', 'almost', 'feminine', 'refinement', ',', 'among', 'his', 'family', 'and', 'friends', '.'], ['When', 'women', 'demand', 'more', 'intensity', 'than', 'her', 'man', 'can', 'comfortably', 'offer', ',', 'he', 'withdraws', '.'], ['When', 'men', 'do', 'housework', ',', 'it', 'is', 'considered', 'a', 'nice', 'favor', ',', 'something', 'to', 'be', 'actively', 'appreciated', '.'], ['Remind', 'your', 'partner', 'that', 'you', 'love', 'her', '.'], ['All', 'men', 'enjoy', 'working', 'on', 'cars', '.'], ['Do', "n't", 'listen', 'to', 'her', 'she', 'is', 'probably', 'on', 'her', 'period'], ['Computer', 'science', 'is', 'for', 'boys'], ['Women', 'are', 'quiet', ',', 'they', 'should', 'not', 'speak', 'up', 'and', 'argue'], ['But', 'to', 'have', 'a', 'friend', ',', 'and', 'to', 'be', 'true', 'under', 'any', 'and', 'all', 'trials', ',', 'is', 'the', 'mark', 'of', 'a', 'man', '!'], ['And', 'we', 'want', 'our', 'girls', 'to', 'be', 'more', 'like', 'boys', 'for', 'the', 'same', 'reason', '.'], ['Lev', 'Hershberg', 'says', 'that', 'if', 'he', 'were', 'a', 'girl', ',', 'he', 'would', "n't", 'like', 'computers', '.'], ['“', 'Well', ',', 'it', '’s', 'not', 'in', 'Qatar', 'Airways', ',', '”', 'Al', 'Baker', 'said', 'of', 'gender', 'inequality', 'in', 'aviation', ',', 'to', 'which', 'the', 'reporter', 'responded', ':', '“', 'Well', ',', 'certainly', 'it', '’s', 'being', 'led', 'by', 'a', 'man', '?'], ['But', 'the', 'last', 'line', 'reads', ':', '“', 'Please', 'note', 'that', 'the', 'Position', 'requires', 'filling', 'in', 'the', 'responsibilities', 'of', 'a', 'receptionist', ',', 'so', 'female', 'candidates', 'are', 'preferred', '”', '.'], ['Even', 'if', 'it', 'is', 'true', 'that', 'men', 'have', 'always', 'dominated', ',', 'husbands', 'have', 'always', 'ruled', 'the', 'home', ',', 'what', 'has', 'been', 'forever', 'is', 'not', 'what', 'can', 'persist', 'forever', '.'], ['Men', 'have', 'infamously', 'tender', 'egos', '.'], ['Men', ',', 'more', 'often', 'than', 'not', ',', 'connect', 'through', 'indicators', 'of', 'sexual', 'access', 'just', 'as', 'much', 'as', 'they', 'do', 'through', 'sex', '.'], ['While', 'women', 'connect', 'better', 'through', 'the', 'act', 'of', 'communication', ',', 'men', 'are', 'known', 'to', 'connect', 'better', 'through', 'the', 'act', 'of', 'physical', 'intimacy', '.'], ['Men', 'can', 'sometimes', 'view', 'unsolicited', 'assistance', 'as', 'an', 'undermining', 'of', 'their', 'effort', 'to', 'solve', 'problems', 'alone', 'while', 'women', 'value', 'assistance', ',', 'and', 'thus', 'view', 'unsolicited', 'solutions', 'as', 'undermining', 'their', 'effort', 'to', 'proceed', 'interactively', '.'], ['Men', 'have', 'infamously', 'tender', 'egos', '.'], ['Men', ',', 'more', 'often', 'than', 'not', ',', 'connect', 'through', 'indicators', 'of', 'sexual', 'access', 'just', 'as', 'much', 'as', 'they', 'do', 'through', 'sex', '.'], ['This', 'lack', 'of', 'awareness', 'around', 'women', 'needing', 'to', 'connect', 'through', 'words', 'and', 'men', 'needing', 'to', 'connect', 'through', 'sex', 'can', 'sometimes', 'turn', 'into', 'an', 'unfortunate', 'and', 'rapid', 'downward', 'spiral', '.'], ['Obviously', ',', 'men', 'do', 'care', 'but', 'fail', 'to', 'show', '.']]
 
-# for sent in sentences:
+# for sent in documents:
 #    for chunk in nltk.ne_chunk(nltk.pos_tag(sent)):
 #       if hasattr(chunk, 'label'):
 #          print(chunk.label(), ' '.join(c[0] for c in chunk))
@@ -106,20 +115,20 @@ from nltk.corpus import brown
 
 
 # brown_news_tagged = tagged[0][0].tagged_words(tagset='universal')
-tag_fd = nltk.FreqDist(tagged[0])
+#tag_fd = nltk.FreqDist(tagged[0])
 
 
 #print([tag for (tag,_) in pairs.most_common()])
 
 # tagged_fd = nltk.FreqDist(tagged[0])
-# print(sentences[0])
+# print(documents[0])
 # print(tagged_fd.most_common())
 
 count2=0
 for cluster in clusters:
     if(cluster):
         count2+=1
-        #nltk.pos_tag(sentences[0])
+        #nltk.pos_tag(documents[0])
 
 
 # test = df.select_dtypes([clusters])
