@@ -6,7 +6,7 @@ https://genderbiasnlp.talp.cat/
     - Book Corpus
     - UMBC
     
-2) dataloaders: Convert datasets to json file `[your_dataset].json` (one sentence or document per line)
+2) dataloaders: Ensures datasets are in proper format `[your_dataset].*`: one sentence or document per line
     - Gap Coreference Dataloader
     - Book Corpus Dataloader
     - UMBC Dataloader
@@ -27,7 +27,7 @@ python3 allennlp_models.py \
 4) A1_filter.py: Run `[your_dataset]_coref.json` through NLTK Part-of-Speech tagging and filter for gender bias type A1. Returns `[your_dataset]_A1.json`      
 
 
-4a) nltk_pos.py: Might want to save `[your_dataset]_coref.json` through NLTK Part-of-Speech tagging in a separate file before filtering `[your_dataset]_ntlk_pos.json`
+4) a) nltk_pos.py: Might want to save `[your_dataset]_coref.json` through NLTK Part-of-Speech tagging in a separate file before filtering `[your_dataset]_ntlk_pos.json`
     
 %TO-DO:
 - remove command line arguments from allennlp_models.py
