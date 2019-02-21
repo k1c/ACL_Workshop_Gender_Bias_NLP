@@ -21,7 +21,7 @@ Run script with Coreference model:
 ```
 python3 allennlp_models.py \
     https://s3-us-west-2.amazonaws.com/allennlp/models/coref-model-2018.02.05.tar.gz \
-    [your_dataset].json --output-file [your_dataset]_coref.json
+    [your_dataset].* --output-file [your_dataset]_coref.json
 ```
 
 4) A1_filter.py: Run `[your_dataset]_coref.json` through NLTK Part-of-Speech tagging and filter for gender bias type A1. Returns `[your_dataset]_A1.json`      
