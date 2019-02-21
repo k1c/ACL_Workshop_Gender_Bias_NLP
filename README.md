@@ -2,7 +2,7 @@
 https://genderbiasnlp.talp.cat/
 
 1) datasets:
-    - Gap Coreference
+    - GAP Coreference
     - Book Corpus
     - UMBC
     
