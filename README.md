@@ -34,3 +34,4 @@ python3 allennlp_models.py \
 - make sure the naming of `[your_dataset]_coref.json` is correct
 - make whole thing run under one script rather than creating seperate files 
 - try allennlp with .txt
+- might need to do some processing after it passed through allennlp: ’ is seen as \u2019 and " is seen as \u201c (how does allennlp tokenize documents?)

@@ -35,6 +35,7 @@ countnoCO=0
 for i in range(len(clusters)):
     if(len(clusters[i])>0): #if cluster exists, this means coreference picked it up therefore there's a chance that its A1
         countCO+=1
+        print(documents[i])
         tagged.append(nltk.pos_tag(documents[i]))
     else:
         countnoCO+=1
