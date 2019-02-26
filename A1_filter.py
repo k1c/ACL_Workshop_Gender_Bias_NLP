@@ -28,24 +28,23 @@ documents = list(df["document"])
 print("Number of clusters: ",len(clusters))
 print("Number of documents: ", len(documents))
 
-print(len(clusters))
 docs_coref = []
 clusters_coref = []
 
-#tuple (nltk_pos(document),cluster))
 DETERM_LIST = ['A', 'a', 'all', 'All', 'Every', 'every', 'the']
-#PRP$_LIST = ['her','his']
-candidates = []
+PRPS_LIST = ['her', 'his']
+A1_candidates = []
 for i in range(len(clusters)):
     if(len(clusters[i])>0): #if cluster exists, this means coreference picked it up therefore there's a chance that its A1
-        doc_pos_tagged = nltk.pos_tag(documents[i])
+        doc_pos_tagged = nltk.pos_tag(documents[i]) #put in separate list
         for cluster in clusters[i]:
             if any( [ any(doc_pos_tagged[i][0] in DETERM_LIST for i in range(start_idx, end_idx+1)) for (start_idx, end_idx) in cluster] ) and \
-                    any( [ any(doc_pos_tagged[i][1] == "PRP" or doc_pos_tagged[i][1] == "PRP$" for i in range(start_idx, end_idx+1)) for (start_idx, end_idx) in cluster]):
-                candidates.append(doc_pos_tagged)
+                    any( [ any(doc_pos_tagged[i][1] == "PRP" or doc_pos_tagged[i][0] in PRPS_LIST for i in range(start_idx, end_idx+1)) for (start_idx, end_idx) in cluster]):
+                A1_candidates.append(doc_pos_tagged)
 
-
-print("Candidates, (size: %d): " % (len(candidates)))
-pp.pprint(candidates)
+print("Part-of-Speech of full sentence that passes coref, (size: %d): " % (len(doc_pos_tagged)))
+print("A1 Candidates, (size: %d): " % (len(A1_candidates)))
+pp.pprint(A1_candidates)
+print("\nConclusion: 42 sentences in total, 22 get tagged by coref. Should have 9 A1, 3 didn't get picked up by coref, and there's 1 too many ([a woman],[she]), for a total of 7.")
 
 
