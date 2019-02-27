@@ -71,7 +71,10 @@ def run(predictor,
         else:
             results = predictor.predict_batch_json(batch_data, cuda_device)
 
+
         for model_input, output in zip(batch_data, results):
+            #if len(output['clusters']) > 0:
+                #print("coref cluster found")
             string_output = predictor.dump_line(output)
             if print_to_console:
                 print("input: ", model_input)
@@ -86,8 +89,10 @@ def run(predictor,
                 line = {"sentence":line.strip()}
             elif model_type == 'coref':
                 line = {"document":line.strip()}
-            line = json.dumps(line)
-            json_data = predictor.load_line(line)
+            # line = json.dumps(line)
+            json_data = line
+            # json_data = predictor.load_line(line)
+
             batch_data.append(json_data)
             if len(batch_data) == batch_size:
                 _run_predictor(batch_data)

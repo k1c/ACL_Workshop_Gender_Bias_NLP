@@ -10,7 +10,7 @@ pp = pprint.PrettyPrinter(indent=1)
 #nltk.download('tagsets')
 
 #returns a dataframe
-df = pd.read_json("./test_dataset_coref.json",lines=True)
+df = pd.read_json("./test_dataset_coref.json",lines=True, encoding='utf-8')
 
 print("AllenNLP Coreference column names: ",df.columns)
 print(df.size)
@@ -36,7 +36,7 @@ PRPS_LIST = ['her', 'his']
 A1_candidates = []
 for i in range(len(clusters)):
     if(len(clusters[i])>0): #if cluster exists, this means coreference picked it up therefore there's a chance that its A1
-        doc_pos_tagged = nltk.pos_tag(documents[i]) #put in separate list
+        doc_pos_tagged = nltk.pos_tag(documents[i])
         for cluster in clusters[i]:
             if any( [ any(doc_pos_tagged[i][0] in DETERM_LIST for i in range(start_idx, end_idx+1)) for (start_idx, end_idx) in cluster] ) and \
                     any( [ any(doc_pos_tagged[i][1] == "PRP" or doc_pos_tagged[i][0] in PRPS_LIST for i in range(start_idx, end_idx+1)) for (start_idx, end_idx) in cluster]):
