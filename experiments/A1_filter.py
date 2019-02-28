@@ -10,7 +10,7 @@ pp = pprint.PrettyPrinter(indent=1)
 #nltk.download('tagsets')
 
 #returns a dataframe
-df = pd.read_json("./test_dataset_coref.json",lines=True, encoding='utf-8')
+df = pd.read_json("./datasets/test_datasets/test_dataset_coref.json",lines=True)
 
 print("AllenNLP Coreference column names: ",df.columns)
 print(df.size)
