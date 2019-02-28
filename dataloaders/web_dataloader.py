@@ -25,17 +25,14 @@ class WebDataset(object):
                                overrides="")
 
         coref_results = []
-        for line in df:
-            line = {"document":line.strip()}
-            coref_results.append(Predictor.from_archive(coref_archive, 'coreference-resolution').predict_json(line))
-
         srl_results = []
-        for line in df:
-            line = {"sentence": line.strip()}
-            srl_results.append(Predictor.from_archive(srl_archive, 'semantic-role-labeling').predict_json(line))
-
         pos_results = []
+
         for line in df:
+            coref_line = {"document":line.strip()}
+            srl_line = {"sentence": line.strip()}
+            coref_results.append(Predictor.from_archive(coref_archive, 'coreference-resolution').predict_json(coref_line))
+            srl_results.append(Predictor.from_archive(srl_archive, 'semantic-role-labeling').predict_json(srl_line))
             pos_results.append(nltk.pos_tag(nltk.word_tokenize(line.strip())))
 
         #used for testing
