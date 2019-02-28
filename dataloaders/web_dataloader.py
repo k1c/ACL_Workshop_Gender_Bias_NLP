@@ -4,6 +4,8 @@ import re
 from allennlp.predictors import Predictor
 from allennlp.models.archival import load_archive
 import nltk
+import pprint
+pp = pprint.PrettyPrinter(indent=1)
 
 class WebDataset(object):
     def __init__(self, data_path, encoding="utf-8"):
@@ -35,10 +37,6 @@ class WebDataset(object):
             srl_results.append(Predictor.from_archive(srl_archive, 'semantic-role-labeling').predict_json(srl_line))
             pos_results.append(nltk.pos_tag(nltk.word_tokenize(line.strip())))
 
-        #used for testing
-        print("Size coref", len(coref_results))
-        print("Size srl", len(srl_results))
-        print("Size pos", len(pos_results))
 
         #Next Step: build a dataset that will hold the 3 results of a sentence per row: https://github.com/pytorch/text/blob/master/torchtext/datasets/sequence_tagging.py
 
