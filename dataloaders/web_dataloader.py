@@ -46,6 +46,6 @@ class WebDataset(object):
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    web_data = WebDataset('../datasets/test_dataset.txt')
+    web_data = WebDataset('../datasets/test_datasets/test_dataset.txt')
     web_data.loader()
 
