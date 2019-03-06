@@ -31,5 +31,5 @@ Run script with Semantic Role Labeling model:
 ```
 python3 allennlp_models.py \
     https://s3-us-west-2.amazonaws.com/allennlp/models/srl-model-2018.02.27.tar.gz \
-    [your_dataset].* --output-file [your_dataset]_coref.json
+    [your_dataset].* --output-file [your_dataset]_srl.json
 ```
