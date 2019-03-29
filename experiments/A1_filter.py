@@ -11,7 +11,7 @@ pp = pprint.PrettyPrinter(indent=1)
 #nltk.download('tagsets')
 
 #returns a dataframe
-df = pd.read_json("./datasets/test_datasets/biasly_data_coref.json",lines=True)
+df = pd.read_json("./datasets/test_datasets/biasly_data_coref.json",lines=True,encoding='latin-1')
 
 print("AllenNLP Coreference column names: ",df.columns)
 print(df.size)
