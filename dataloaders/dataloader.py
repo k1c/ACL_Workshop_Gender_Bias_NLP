@@ -15,6 +15,7 @@ import pandas as pd
 import re
 import unidecode
 import pprint
+from tqdm import tqdm
 pp = pprint.PrettyPrinter(indent=1)
 
 #Use the NLTK Downloader to obtain the resources that you need for this script:
@@ -69,7 +70,7 @@ class Dataloader(object):
     def coref_true_to_file(self, data):
         # write the coref results to file
         f = open(self.output_name + "_coref_true.tsv", "w+")
-        for line in data:
+        for line in tqdm(data):
             coref_line = {"document":line.strip()}
             try:
                 json = self.predictor.predict_json(coref_line)
