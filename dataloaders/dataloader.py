@@ -1,11 +1,15 @@
 '''
-Purpose: General Purpose dataloader that passes text data through allen-nlp coref and also cleans the text data
-Usage: python web_dataloader.py input_dataset_path output_dataset_name
+Purpose:    Dataloader that takes text data and passes it through allen-nlp coref and/or A1 filter and writes the results to file
+            Must create a load function for each dataset
+            There's also a function called preprocess() that cleans sentences (depending on your data, uncomment what you need)
 
-Input: dataset.tsv (one sentence per line)
-Output: coref results from allen-nlp (one json per line)
+usage example:
+    input_path = '../datasets/test_datasets/IMDB-train.txt'
+    output_name = "IMDB"
 
-There's also a function called preprocess() that cleans sentences (depending on your data, uncomment what you need
+    dataloader = Dataloader(input_path, output_name)
+    data = dataloader.load_IMDB()
+    dataloader.coref_true_to_file(data)
 '''
 
 from allennlp.predictors import Predictor
@@ -51,6 +55,7 @@ class Dataloader(object):
                 new_data.append(new_sentence)
         return new_data
 
+# loads IMDB dataset and returns a dataframe that contains one review per line
     def load_IMDB(self):
 
         # read in input_file
@@ -66,7 +71,9 @@ class Dataloader(object):
 
         return df_clean
 
-#Purpose: writes the sentences that have coref-resolution in them to file (one sentence per line)
+#Purpose: writes text data that contains coref-resolution in them to file (one per line)
+    # data input should be in the form of one text data per line, where text data can be sentence or paragraph
+
     def coref_true_to_file(self, data):
         # write the coref results to file
         f = open(self.output_name + "_coref_true.tsv", "w+")
@@ -81,7 +88,7 @@ class Dataloader(object):
 
         print("write to file complete")
 
-# Purpose: writes the sentences that have passed the A1 filter to file (one sentence per line)
+# Purpose: writes the sentences/paragraphs that have passed the A1 filter to file (one sentence per line)
     def A1_filter_to_file(self, data):
         pass
 
