@@ -25,12 +25,12 @@ pp = pprint.PrettyPrinter(indent=1)
 
 
 #Use the NLTK Downloader to obtain the resources that you need for this script:
-#nltk.download('averaged_perceptron_tagger')
-#nltk.download('punkt')
-#nltk.download('averaged_perceptron_tagger')
-#nltk.download('maxent_ne_chunker')
-#nltk.download('words')
-#nltk.download('tagsets')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('maxent_ne_chunker')
+nltk.download('words')
+nltk.download('tagsets')
 
 
 class Dataloader(object):
