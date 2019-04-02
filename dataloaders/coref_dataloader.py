@@ -44,20 +44,35 @@ class Dataloader(object):
                          weights_file=None,
                          overrides=""), 'coreference-resolution')
 
-    def preprocess(self, sentences):
+    def preprocess(self, data):
         new_data = []
-        for sentence in sentences:
-            new_sentence = re.sub('"', '', sentence)  # remove quotation marks
-            new_sentence = unidecode.unidecode(new_sentence)  # removes accents and represents any unicode to closest ascii
-            new_sentence = re.sub('<.*?>', '', new_sentence)  # remove HTML tags (in case, should be clean)
-            # new_sentence = re.sub(r'[^\w\s]', '', new_sentence) # remove punctuation
-            new_sentence = sent_tokenize(new_sentence) # sentence tokenization
-            new_sentence = re.sub(r'[^\w\s]', '', new_sentence) # remove punctuation if wanted, otherwise comment out
+        for textdata in data:
+            new_textdata = re.sub('"', '', textdata)  # remove quotation marks
+            new_textdata = unidecode.unidecode(new_textdata)  # removes accents and represents any unicode to closest ascii
+            new_textdata = re.sub('<.*?>', '', new_textdata)  # remove HTML tags (in case, should be clean)
+            new_sentences = sent_tokenize(new_textdata) # sentence tokenization
+            #new_sentence = re.sub(r'[^\w\s]', '', new_sentence) # remove punctuation
             # new_sentence = new_sentence.lower() # convert to lower case
-            wordcount = len(new_sentence.split())
-            if new_sentence != '' and wordcount > 2: # wordcount of 2 or lower doesn't make sense for coref
-                new_data.append(new_sentence)
+            for sentence in new_sentences:
+                wordcount = len(sentence.split())
+                if sentence != '' and wordcount > 2: # wordcount of 2 or lower doesn't make sense for coref
+                    new_data.append(sentence)
         return new_data
+
+# load general purpose text dataset that has one data text per line
+    def load_general(self):
+
+        # read in input_file
+        df = pd.read_csv(self.data_path, delimiter='\t', encoding='utf-8', header=None, squeeze=True)
+
+        #info about the dataset
+        print("Size of Dataset: ", len(df))
+
+        # cleaning sentences
+        df_clean = self.preprocess(df)
+        print("Size of Dataset after clean: ", len(df_clean))
+
+        return df_clean
 
 # loads IMDB dataset and returns a dataframe that contains one review per line
     def load_IMDB(self):
@@ -98,9 +113,17 @@ class Dataloader(object):
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    input_path = '../datasets/test_datasets/IMDB-train.txt'
-    output_name = "IMDB"
+    # input_path_imdb_train = '../datasets/IMDB/IMDB-train.txt'
+    # output_name_train = "IMDB-train"
+    #
+    # dataloader = Dataloader(input_path_imdb_train, output_name_train)
+    # data_imdb_train = dataloader.load_IMDB()
+    # dataloader.coref_true_to_file(data_imdb_train)
 
-    dataloader = Dataloader(input_path, output_name)
-    data = dataloader.load_IMDB()
-    dataloader.coref_true_to_file(data)
+    input_path_imdb_train_subset = '../datasets/test_datasets/test_dataset.txt'
+    output_name_train_subset = "test_dataset"
+
+    dataloader = Dataloader(input_path_imdb_train_subset, output_name_train_subset)
+    data_imdb_train_subset = dataloader.load_general()
+    dataloader.coref_true_to_file(data_imdb_train_subset)
+
