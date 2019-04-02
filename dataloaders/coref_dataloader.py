@@ -20,10 +20,12 @@ import re
 import unidecode
 import pprint
 from tqdm import tqdm
+import nltk
+from nltk.tokenize import sent_tokenize
 pp = pprint.PrettyPrinter(indent=1)
 
+
 #Use the NLTK Downloader to obtain the resources that you need for this script:
-import nltk
 #nltk.download('averaged_perceptron_tagger')
 #nltk.download('punkt')
 #nltk.download('averaged_perceptron_tagger')
@@ -49,6 +51,8 @@ class Dataloader(object):
             new_sentence = unidecode.unidecode(new_sentence)  # removes accents and represents any unicode to closest ascii
             new_sentence = re.sub('<.*?>', '', new_sentence)  # remove HTML tags (in case, should be clean)
             # new_sentence = re.sub(r'[^\w\s]', '', new_sentence) # remove punctuation
+            new_sentence = sent_tokenize(new_sentence) # sentence tokenization
+            new_sentence = re.sub(r'[^\w\s]', '', new_sentence) # remove punctuation if wanted, otherwise comment out
             # new_sentence = new_sentence.lower() # convert to lower case
             wordcount = len(new_sentence.split())
             if new_sentence != '' and wordcount > 2: # wordcount of 2 or lower doesn't make sense for coref
