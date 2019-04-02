@@ -1,5 +1,6 @@
 import nltk
 import pandas as pd
+import json
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 import pprint
 pp = pprint.PrettyPrinter(indent=1)
@@ -11,9 +12,9 @@ pp = pprint.PrettyPrinter(indent=1)
 #nltk.download('tagsets')
 
 #returns a dataframe
-df = pd.read_json("./datasets/test_datasets/biasly_data_coref.json",lines=True,encoding='latin-1')
+df = pd.read_json("../datasets/test_datasets/test_dataset_coref.json",lines=True,encoding='utf-8')
 
-print("AllenNLP Coreference column names: ",df.columns)
+print("AllenNLP Coreference column names: ", df.columns)
 print(df.size)
 print(df.shape)
 #print(df.dtypes)
@@ -51,9 +52,9 @@ print("A1 Candidates, (size: %d): " % (len(A1_candidates)))
 #print("\nConclusion: 42 sentences in total, 22 get tagged by coref. Should have 9 A1, 3 didn't get picked up by coref, and there's 1 too many ([a woman],[she]), for a total of 7.")
 
 # check duplicates
-f = open("A1_candidates","w+")
+f = open("A1_candidates_cleaner","w+")
 for i in range(len(A1_candidates)):
     sentence = TreebankWordDetokenizer().detokenize(A1_candidates[i])
-    sentence = sentence.encode('ascii', 'ignore').decode('ascii') #silently dropping unicode, workaround until our dataset is clean
+    #sentence = sentence.encode('ascii', 'ignore').decode('ascii') #silently dropping unicode, workaround until our dataset is clean
     f.write(sentence+"\n")
 f.close()
