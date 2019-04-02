@@ -1,7 +1,6 @@
 '''
-Purpose:    Dataloader that takes text data and passes it through allen-nlp coref and/or A1 filter and writes the results to file
-            Must create a load function for each dataset
-            There's also a function called preprocess() that cleans sentences (depending on your data, uncomment what you need)
+Purpose:    Dataloader that takes IMDB data and passes it through allen-nlp coref or A1 filter and writes the results to file
+            There's also a function called preprocess() that cleans sentences
 
 usage example:
     input_path = '../datasets/test_datasets/IMDB-train.txt'
@@ -46,17 +45,18 @@ class Dataloader(object):
 
     def preprocess(self, data):
         new_data = []
-        for textdata in data:
-            new_textdata = re.sub('"', '', textdata)  # remove quotation marks
-            new_textdata = unidecode.unidecode(new_textdata)  # removes accents and represents any unicode to closest ascii
-            new_textdata = re.sub('<.*?>', '', new_textdata)  # remove HTML tags (in case, should be clean)
-            new_sentences = sent_tokenize(new_textdata) # sentence tokenization
-            #new_sentence = re.sub(r'[^\w\s]', '', new_sentence) # remove punctuation
-            # new_sentence = new_sentence.lower() # convert to lower case
-            for sentence in new_sentences:
-                wordcount = len(sentence.split())
-                if sentence != '' and wordcount > 2: # wordcount of 2 or lower doesn't make sense for coref
-                    new_data.append(sentence)
+        for line in data:
+            new_line = re.sub('<.*?>', ' ', line)  # remove HTML tags and replace with space
+            sentences = sent_tokenize(new_line)  # sentence tokenization
+            for sentence in sentences:
+                new_sentence = re.sub('"', '', sentence)  # remove quotation marks
+                new_sentence = unidecode.unidecode(new_sentence)  # removes accents and represents any unicode to closest ascii
+                new_sentence = re.sub(r'\s+', ' ', new_sentence)  # Eliminate duplicate whitespaces
+                # new_sentence = re.sub(r'[^\w\s]', '', new_sentence) # remove punctuation
+                # new_sentence = new_sentence.lower() # convert to lower case
+                wordcount = len(new_sentence.split())
+                if new_sentence != '' and wordcount > 2: # wordcount of 2 or lower doesn't make sense for coref
+                    new_data.append(new_sentence)
         return new_data
 
 # load general purpose text dataset that has one data text per line
@@ -100,10 +100,14 @@ class Dataloader(object):
             coref_line = {"document":line.strip()}
             try:
                 json = self.predictor.predict_json(coref_line)
+            except KeyboardInterrupt:
+                print("KeyboardInterrup")
+                break
             except:
                 print("problem sentence: ", line)
             if len(json['clusters']) > 0:
                 f.write(TreebankWordDetokenizer().detokenize(json['document'])+"\n")
+        f.close()
 
         print("write to file complete")
 
@@ -113,17 +117,17 @@ class Dataloader(object):
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    # input_path_imdb_train = '../datasets/IMDB/IMDB-train.txt'
-    # output_name_train = "IMDB-train"
+    input_path_imdb_train = '../datasets/IMDB/imbd_subset.txt'
+    output_name_train = "IMDB_subset"
+
+    dataloader = Dataloader(input_path_imdb_train, output_name_train)
+    data_imdb_train = dataloader.load_IMDB()
+    dataloader.coref_true_to_file(data_imdb_train)
+
+    # input_path_imdb_train_subset = '../datasets/IMDB/imbd_subset.txt'
+    # output_name_train_subset = "imbd_subset_new_new_new"
     #
-    # dataloader = Dataloader(input_path_imdb_train, output_name_train)
-    # data_imdb_train = dataloader.load_IMDB()
-    # dataloader.coref_true_to_file(data_imdb_train)
-
-    input_path_imdb_train_subset = '../datasets/test_datasets/test_dataset.txt'
-    output_name_train_subset = "test_dataset"
-
-    dataloader = Dataloader(input_path_imdb_train_subset, output_name_train_subset)
-    data_imdb_train_subset = dataloader.load_general()
-    dataloader.coref_true_to_file(data_imdb_train_subset)
+    # dataloader = Dataloader(input_path_imdb_train_subset, output_name_train_subset)
+    # data_imdb_train_subset = dataloader.load_general()
+    # dataloader.coref_true_to_file(data_imdb_train_subset)
 
