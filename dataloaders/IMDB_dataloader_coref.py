@@ -95,6 +95,7 @@ class Dataloader(object):
 
     def coref_true_to_file(self, data):
         # write the coref results to file
+        corefCount = 0
         f = open(self.output_name + "_coref_true.tsv", "w+")
         for line in tqdm(data):
             coref_line = {"document":line.strip()}
@@ -106,9 +107,10 @@ class Dataloader(object):
             except:
                 print("problem sentence: ", line)
             if len(json['clusters']) > 0:
+                corefCount += 1
                 f.write(TreebankWordDetokenizer().detokenize(json['document'])+"\n")
         f.close()
-
+        print("Coref count: ", corefCount)
         print("write to file complete")
 
 # Purpose: writes the sentences/paragraphs that have passed the A1 filter to file (one sentence per line)
