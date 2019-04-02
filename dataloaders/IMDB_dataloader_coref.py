@@ -117,8 +117,8 @@ class Dataloader(object):
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    input_path_imdb_train = '../datasets/IMDB/imbd_subset.txt'
-    output_name_train = "IMDB_subset"
+    input_path_imdb_train = '../datasets/IMDB/IMDB-train.txt'
+    output_name_train = "IMDB-train"
 
     dataloader = Dataloader(input_path_imdb_train, output_name_train)
     data_imdb_train = dataloader.load_IMDB()
