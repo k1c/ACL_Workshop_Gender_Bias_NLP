@@ -25,12 +25,12 @@ pp = pprint.PrettyPrinter(indent=1)
 
 
 #Use the NLTK Downloader to obtain the resources that you need for this script:
-nltk.download('averaged_perceptron_tagger')
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('maxent_ne_chunker')
-nltk.download('words')
-nltk.download('tagsets')
+# nltk.download('averaged_perceptron_tagger')
+# nltk.download('punkt')
+# nltk.download('averaged_perceptron_tagger')
+# nltk.download('maxent_ne_chunker')
+# nltk.download('words')
+# nltk.download('tagsets')
 
 
 class Dataloader(object):
@@ -113,9 +113,39 @@ class Dataloader(object):
         print("Coref count: ", corefCount)
         print("write to file complete")
 
-# Purpose: writes the sentences/paragraphs that have passed the A1 filter to file (one sentence per line)
-    def A1_filter_to_file(self, data):
-        pass
+# Purpose: writes text data that contains coref-resolution in them and have passed the Gender Pronoun filter to file (one sentence per line)
+    # data input should be in the form of one text data per line, where text data can be sentence or paragraph
+    def GP_filter_to_file(self, data):
+        # write the coref results to file
+        GENDER_PRONOUNS = ['he','she','him','her','his','hers','himself','herself','He','She','Him','Her','His','Hers','Himself','Herself']
+        corefCount = 0
+        gpCount = 0
+        candidates = set()
+
+        for line in tqdm(data):
+            coref_line = {"document":line.strip()}
+            try:
+                json = self.predictor.predict_json(coref_line)
+            except KeyboardInterrupt:
+                print("KeyboardInterrup")
+                break
+            except:
+                print("problem sentence: ", line)
+
+            if len(json['clusters']) > 0:
+                corefCount += 1
+                for clusters in json['clusters']:
+                    if any([ any(json['document'][i] in GENDER_PRONOUNS for i in range(start_idx, end_idx+1)) for (start_idx, end_idx) in clusters ]):
+                        gpCount += 1
+                        candidates.add(TreebankWordDetokenizer().detokenize(json['document']))
+
+        with open(self.output_name + "_GP_filter.tsv", "w+") as f:
+            for line in candidates:
+                f.write(line + "\n")
+
+        print("Coref count: ", corefCount)
+        print("GP Filter count: ", gpCount)
+        print("write to file complete")
 
 #Used temporarily for testing
 if __name__ == '__main__':
@@ -124,7 +154,7 @@ if __name__ == '__main__':
 
     dataloader = Dataloader(input_path_imdb_train, output_name_train)
     data_imdb_train = dataloader.load_IMDB()
-    dataloader.coref_true_to_file(data_imdb_train)
+    dataloader.GP_filter_to_file(data_imdb_train)
 
     # input_path_imdb_train_subset = '../datasets/IMDB/imbd_subset.txt'
     # output_name_train_subset = "imbd_subset_new_new_new"
