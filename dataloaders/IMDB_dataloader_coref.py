@@ -239,9 +239,10 @@ class Dataloader(object):
                                         if sent.label() == "PERSON":
                                             namelist.append(' '.join(c[0] for c in sent))
 
-                                for cluster in ['document']:
+                                for cluster in json['clusters']:
                                     if any(' '.join(w for w in json['document'][c[0]:c[1]+1]) in namelist for c in clusters):
                                         human += 1
+                                    #elif any([any([(' '.join(w for w in json['document'][c[0]:c[1]+1])) in namelist for c in cluster]) and all([((c[0] == c[1]) and (c[0] in GENDER_PRONOUNS) for c in cluster)])]):
                                     else:
                                         nohuman += 1
                                         candidates.add(TreebankWordDetokenizer().detokenize(json['document']))
@@ -256,19 +257,21 @@ class Dataloader(object):
         print("Coref with GP but with no GP to GP link: ", gpNoLink)
         print("Coref + with GP and GP Link + Human name filter count", human)
         print("Coref + with GP + no GP Link + no Human name", nohuman)
+        print(namelist)
         print("write to file complete")
 
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    input_path_imdb_train = '../datasets/IMDB/IMDB-train.txt'
-    output_name_train = "IMDB-train"
-
-    dataloader = Dataloader(input_path_imdb_train, output_name_train)
+    #input_path_imdb_train = '../datasets/IMDB/IMDB-train.txt'
+    #output_name_train = "IMDB-train"
+    inputname = '../datasets/IMDB/IMDB-train.txt'
+    outputname = "IMDB-train"
+    dataloader = Dataloader(inputname, outputname)
     data_imdb_train = dataloader.load_IMDB()
     #dataloader.coref_true_to_file(data_imdb_train)
     #dataloader.GP_filter_to_file(data_imdb_train)
-    dataloader.HumanName_filter(data_imdb_train)
+    #dataloader.HumanName_filter(data_imdb_train)
     #dataloader.HumanName_filter(data_imdb_train)
 
     # input_path_imdb_train_subset = '../datasets/IMDB/imbd_subset.txt'
