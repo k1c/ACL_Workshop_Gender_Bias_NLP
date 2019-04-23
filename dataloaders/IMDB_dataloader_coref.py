@@ -183,7 +183,7 @@ class Dataloader(object):
                     if any([ any(json['document'][i] in GENDER_PRONOUNS for i in range(start_idx, end_idx+1)) for (start_idx, end_idx) in clusters ]): # Identify if GP is in a cluster
                         gpCount += 1
                         for cluster in ['document']:
-                            if any([any(json['document'][c] in GENDER_PRONOUNS for c in ([((c[0] == c[1]) and (c[0]) in GENDER_PRONOUNS) for c in clusters]))]): # indentify the GP clustered with another GP
+                            if any([any(json['document'][i] in GENDER_PRONOUNS for i in ([((c[0] == c[1]) and (c[0]) in GENDER_PRONOUNS) for c in cluster]))]): # indentify the GP clustered with another GP
                                 gpLink += 1
                             else:                            # GP with no link store accordingly
                                 gpNoLink += 1
