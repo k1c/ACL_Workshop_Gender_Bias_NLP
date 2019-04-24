@@ -60,19 +60,18 @@ class Dataloader(object):
         new_sentences = [re.sub(r'\n+', ' ', s) for s in sentences]
         #clean_sentences.append(new_sentences)
 
-        wordcount = len(new_sentences.split())
-        if new_sentences != '' and wordcount > 2: # wordcount of 2 or lower doesn't make sense for coref
-            clean_sentences.append(new_sentences)
+        for sentence in new_sentences:
+            wordcount = len(sentence.split())
+            if sentence != '' and wordcount > 2: # wordcount of 2 or lower doesn't make sense for coref
+                clean_sentences.append(sentence)
         return clean_sentences
 
-# loads IMDB dataset and returns a dataframe that contains one review per line
+
     def load_gutenberg(self):
         # read in input_file
         df = self.data_path
-
         #info about the dataset
         print("Size of Dataset: ", len(df))
-
         # cleaning sentences
         df_clean = self.preprocess(df)
         print("Size of Dataset after clean: ", len(df_clean))
