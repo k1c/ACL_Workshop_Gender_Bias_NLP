@@ -37,19 +37,23 @@ def remove_sentence(data, word_range, which_type="all"):
     for cluster in word_range:
         if which_type == "gp": # check if the cluster has a gendered pronoun
             if any([((c[0] == c[1]) and (tok[c[0]]).lower() in pro_lst) for c in cluster]):
-                if which_type == "name":  # check if the cluster has name link
+                result.append(False)
+                if (which_type == "name"):  # check if the cluster has name link
                     # Check all the instances of human names in the sentence and build "name_lst"
                     name_lst = []
                     for sent_chunk in ne_chunk(pos_tag(word_tokenize(data))):
                         if hasattr(sent_chunk, 'label'):
-                            if sent_chunk.label() == "PERSON":
+                            if (sent_chunk.label() == "PERSON"):
                                 name_lst.append(' '.join(c[0] for c in sent_chunk))
+                                (print("TESTING", c[0]) for c in sent_chunk)
                     result.append(any([((' '.join(w for w in tok[c[0]:c[1] + 1])) in name_lst)
                                        for c in cluster]))
-                elif which_type == "pro":  # check if the cluster has only pronoun links
+
+                elif (which_type == "pro"):  # check if the cluster has only pronoun links
                     result.append(all([((c[0] == c[1]) and (tok[c[0]]).lower() in pro_lst) for c in cluster]))
 
-                elif which_type == "term":  # check if the cluster has gendered term
+
+                elif (which_type == "term"):  # check if the cluster has gendered term
                     for c in cluster:
                         for i in c:
                             word_disam = lesk(tok, tok[i], 'n')  # check definition assigned from word disambiguation
@@ -70,8 +74,8 @@ def remove_sentence(data, word_range, which_type="all"):
                                        remove_sentence(data, word_range, which_type="term")]))
             else:
                 result.append(True)
-    return any(result)
 
+    return any(result)
 
 
 
