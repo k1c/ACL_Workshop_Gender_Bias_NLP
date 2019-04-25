@@ -59,25 +59,24 @@ class Dataloader(object):
             coref_range.append(coref_json['clusters'])
             # if coref cluster exists, then add the coref json to coref_true list
             if len(coref_json['clusters']) > 0:
-                coref_count +=1
+                coref_count += 1
                 coref_output.append(1) #build the coref arrays
             else:
                 coref_output.append(0)
-                gp_output.append(0)
+                #gp_output.append(0)
 
-            for cluster in coref_json['clusters']:
-                print(cluster)
-                if any([((c[0] == c[1]) and (coref_json['document'][c[0]]).lower() in GENDER_PRONOUNS) for c in cluster]):
+        for i in range(0, len(data)):
+            if coref_output[i] == 1:
+                if any([((c[0] == c[1]) and (coref_json['document'][c[0]]).lower() in GENDER_PRONOUNS) for c in coref_json['clusters']]):
                     gp_output.append(1)
                 else:
                     gp_output.append(0)
+            else:
+                gp_output.append(0)
 
-        print(coref_count)
-        print("data",len(data))
-        print("coref output:",len(coref_output))
-        print("gp_output",len(gp_output))
-        print("coref range",len(coref_range))
-        #assert (len(data) != len(coref_output) != len(gp_output) != len(coref_range)), "arrays not same size"
+
+
+        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
 
         # if self.filter(data,gp_output,coref_json['clusters'],"all") is False:
         #     f.write(TreebankWordDetokenizer().detokenize(coref_json['document']) + "\n")
