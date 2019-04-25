@@ -35,7 +35,6 @@ class Dataloader(object):
                          weights_file=None,
                          overrides=""), 'coreference-resolution')
 
-# coref_json = {'top_spans': [[0, 0], [0, 8], [2, 5], [2, 8], [7, 8], [12, 12]], 'predicted_antecedents': [-1, -1, -1, -1, -1, 4], 'document': ['This', 'is', 'an', 'action', '-', 'melodrama', 'like', 'the', 'world', 'has', 'never', 'seen', 'it', 'before', '.'], 'clusters': [[[0, 0], [12, 12]]]}
     def filter_to_file(self, data):
         coref_true = []
         f = open(self.output_name, "w+")
@@ -55,34 +54,28 @@ class Dataloader(object):
             except:
                 print("problem sentence: ", line)
 
-            #print(coref_json['clusters'])
             coref_range.append(coref_json['clusters'])
-            # if coref cluster exists, then add the coref json to coref_true list
+
             if len(coref_json['clusters']) > 0:
-                coref_count += 1
-                coref_output.append(1) #build the coref arrays
+                coref_output.append(1) # coref cluster exists
             else:
-                coref_output.append(0)
-                #gp_output.append(0)
+                coref_output.append(0) # coref cluster does not exist
 
         for i in range(0, len(data)):
             if coref_output[i] == 1:
                 if any([((c[0] == c[1]) and (coref_json['document'][c[0]]).lower() in GENDER_PRONOUNS) for c in coref_json['clusters']]):
-                    gp_output.append(1)
+                    gp_output.append(1) # gp pronoun exists
                 else:
-                    gp_output.append(0)
+                    gp_output.append(0) # gp pronoun exists
             else:
-                gp_output.append(0)
-
-
+                gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
         assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
 
-        # if self.filter(data,gp_output,coref_json['clusters'],"all") is False:
+        #if self.filter(data,gp_output,coref_range,"all") is False:
         #     f.write(TreebankWordDetokenizer().detokenize(coref_json['document']) + "\n")
-
-        f.close()
-        print("write to file complete")
+        # f.close()
+        # print("write to file complete")
 
 
 
