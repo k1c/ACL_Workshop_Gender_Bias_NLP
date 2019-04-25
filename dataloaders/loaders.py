@@ -79,3 +79,14 @@ def load_IMDB(data_path):
     print("Size of Dataset after clean: ", len(df_clean))
 
     return df_clean
+
+# load general purpose text dataset that has one data text per line
+def load_general(data_path):
+
+    # read in input_file
+    df = pd.read_csv(data_path, delimiter='\t', encoding='utf-8', header=None, squeeze=True)
+
+    #info about the dataset
+    print("Size of Dataset: ", len(df))
+
+    return df
