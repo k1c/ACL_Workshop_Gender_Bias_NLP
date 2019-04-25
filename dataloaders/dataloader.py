@@ -76,7 +76,7 @@ class Dataloader(object):
 
 
 
-        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
+        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size" 
 
         # if self.filter(data,gp_output,coref_json['clusters'],"all") is False:
         #     f.write(TreebankWordDetokenizer().detokenize(coref_json['document']) + "\n")
