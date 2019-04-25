@@ -70,7 +70,7 @@ class Dataloader(object):
             else:
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
-        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
+        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size" 
 
         #if self.filter(data,gp_output,coref_range,"all") is False:
         #     f.write(TreebankWordDetokenizer().detokenize(coref_json['document']) + "\n")
