@@ -2,7 +2,7 @@ import nltk
 from nltk import ne_chunk, pos_tag
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.wsd import lesk
-from nltk.corpus import wordnet
+from nltk.corpus import wordnet as wn
 from nltk.stem import WordNetLemmatizer
 from nltk.stem.porter import *
 stemmer = PorterStemmer()
@@ -61,7 +61,7 @@ def check_remove(data, word_range, which_type="all"):
                         # print(word_disam.definition())
                         result.append(any([wn_lem.lemmatize(w) in (gen_fam_term + gen_term + pro_lst)
                                            and (x in (gen_fam_term + gen_term + pro_lst)
-                                                for x in wn._morphy(w, wordnet.NOUN))
+                                                for x in wn._morphy(w, wn.NOUN))
                                            # checks all possible morphological functions
                                            for w in word_tokenize(word_disam.definition())]
                                           + [tok[i] in (gen_fam_term + gen_term + pro_lst)]))
