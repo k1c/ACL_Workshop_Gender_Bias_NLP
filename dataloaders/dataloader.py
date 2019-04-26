@@ -13,7 +13,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 pp = pprint.PrettyPrinter(indent=1)
 
 #from loaders import load_IMDB, load_gluternberg
-from filter import check_remove
+from filter import check_remove, filter_by_corpus
 from loaders import load_IMDB, load_gutenberg, load_general
 
 #Use the NLTK Downloader to obtain the resources that you need for this script:
@@ -26,10 +26,10 @@ from loaders import load_IMDB, load_gutenberg, load_general
 
 
 class Dataloader(object):
-    def __init__(self, output_name, filter, encoding="utf-8"):
+    def __init__(self, output_name, filter_by_corpus, encoding="utf-8"):
         self.output_name = output_name
         self.encoding = encoding
-        self.filter = filter
+        self.filter_by_corpus = filter_by_corpus
         self.predictor = Predictor.from_archive(
             load_archive('https://s3-us-west-2.amazonaws.com/allennlp/models/coref-model-2018.02.05.tar.gz',
                          weights_file=None,
@@ -43,7 +43,8 @@ class Dataloader(object):
         coref_output = []
         gp_output = []
         coref_range = []
-        coref_count = 0
+        final_sentences = []
+        #coref_count = 0
         for line in tqdm(data):
             coref_line = {"document":line.strip()}
             try:
@@ -58,32 +59,49 @@ class Dataloader(object):
 
             if len(coref_json['clusters']) > 0:
                 coref_output.append(1) # coref cluster exists
+
             else:
                 coref_output.append(0) # coref cluster does not exist
 
         for i in range(0, len(data)):
             if coref_output[i] == 1:
-                if any([((c[0] == c[1]) and (coref_json['document'][c[0]]).lower() in GENDER_PRONOUNS) for c in coref_json['clusters']]):
+                if any([((c[0] == c[1]) and (coref_json['document'][c[0]]).lower() in GENDER_PRONOUNS) for c in coref_range[i]]):
                     gp_output.append(1) # gp pronoun exists
                 else:
                     gp_output.append(0) # gp pronoun exists
             else:
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
-        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size" 
+        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
+        print(gp_output)
+        #print(gp_output)
+        pronoun_link = self.filter_by_corpus(data, coref_range, gp_output, "pro")
+        human_name = self.filter_by_corpus(data, coref_range, gp_output, "name")
+        gendered_term = self.filter_by_corpus(data, coref_range, gp_output, "term")
+        final_candidates = self.filter_by_corpus(data,coref_range, gp_output,"all")
+        building_df = {'Sentences': data, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
+                        'Gendered term': gendered_term, 'Final candidates': final_candidates}
+        #print(gp_output)
+        #print(human_name)
+        plotting_df = pd.DataFrame(building_df)
+        #print(plotting_df)
+        for i in range(0, len(data)):
+            if final_candidates == 1:
+                final_sentences.append(data)
+                with open(self.output_name + "final_candidates.tsv", "w+") as f:
+                    for line in final_sentences:
+                        f.write(line + "\n")
+        print("write to file complete")
 
-        #if self.filter(data,gp_output,coref_range,"all") is False:
-        #     f.write(TreebankWordDetokenizer().detokenize(coref_json['document']) + "\n")
-        # f.close()
-        # print("write to file complete")
-
+        return plotting_df
 
 
 #Used temporarily for testing
 if __name__ == '__main__':
     input_path = '../datasets/test_datasets/test_dataset.txt'
-    output_name = "test_dataset"
+    output_name = "test_finalcandidates"
 
-    dataloader = Dataloader(output_name, check_remove)
+    dataloader = Dataloader(output_name, filter_by_corpus)
     data = load_general(input_path)
-    dataloader.filter_to_file(data)
+    df = dataloader.filter_to_file(data)
+    #print(df)
