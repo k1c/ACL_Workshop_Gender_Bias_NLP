@@ -24,11 +24,15 @@ from loaders import load_IMDB, load_gutenberg, load_general
 # nltk.download('words')
 # nltk.download('tagsets')
 
-
+""" If you are using a gutenberg dataset, choose the load_gutenberg loader 
+    If you are using IMDB dataset, choose the load_IMDB loader
+    If you have a clean txt that is ready for testing, use the load_general loader
+"""
 class Dataloader(object):
-    def __init__(self, output_name, filter_by_corpus, encoding="utf-8"):
-        self.output_name = output_name
+    def __init__(self, output_candidates, filter_by_corpus, output_df, encoding="utf-8"):
+        self.output_candidates = output_candidates
         self.encoding = encoding
+        self.output_df = output_df
         self.filter_by_corpus = filter_by_corpus
         self.predictor = Predictor.from_archive(
             load_archive('https://s3-us-west-2.amazonaws.com/allennlp/models/coref-model-2018.02.05.tar.gz',
@@ -37,7 +41,7 @@ class Dataloader(object):
 
     def filter_to_file(self, data):
         coref_true = []
-        f = open(self.output_name, "w+")
+        f = open(self.output_candidates, "w+")
 
         GENDER_PRONOUNS = ['he','she','him','her','his','hers','himself','herself']
         coref_output = []
@@ -82,9 +86,9 @@ class Dataloader(object):
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
         assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
-        print("gp array", gp_output)
+
         print("gp_output length", len(gp_output))
-        #print(gp_output)
+
         pronoun_link = self.filter_by_corpus(data, coref_range, gp_output, "pro")
         human_name = self.filter_by_corpus(data, coref_range, gp_output, "name")
         gendered_term = self.filter_by_corpus(data, coref_range, gp_output, "term")
@@ -94,25 +98,22 @@ class Dataloader(object):
 
         building_df = {'Sentences': data, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
                         'Gendered term': gendered_term, 'Final candidates': final_candidates}
-        print("pronoun link", pronoun_link)
-        print("human name", human_name)
-        print("gendered term", gendered_term)
-        print("final_candidates", final_candidates)
+
         plotting_df = pd.DataFrame(building_df)
 
         #write to csv
-        plotting_df[plotting_df['Final candidates'] == 1]['Sentences'].to_csv(self.output_name, header=False, index=None)
-
+        plotting_df[plotting_df['Final candidates'] == 1]['Sentences'].to_csv(self.output_candidates, header=False, index=None)
+        plotting_df.to_csv(self.output_df, header=True, index=None )
 
         return plotting_df
 
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    input_path = '../datasets/test_datasets/test_dataset.txt'
-    output_name = "winnerHOPE"
+    input_path = '../datasets/gutenberg/pg6167.txt'  ## set up for gutenberg
+    output_candidates = "winnerHOPE"
+    output_df = "AllFilterData"
 
-    dataloader = Dataloader(output_name, filter_by_corpus)
-    data = load_general(input_path)
-    df = dataloader.filter_to_file(data)
-    #print(df)
+    dataloader = Dataloader(output_candidates, filter_by_corpus, output_df)
+    data = load_gutenberg(input_path)
+    dataloader.filter_to_file(data)
