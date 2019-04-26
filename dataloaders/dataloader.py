@@ -44,6 +44,7 @@ class Dataloader(object):
         gp_output = []
         coref_range = []
         final_sentences = []
+        tok_sent = []
         #coref_count = 0
         for line in tqdm(data):
             coref_line = {"document":line.strip()}
@@ -56,6 +57,7 @@ class Dataloader(object):
                 print("problem sentence: ", line)
 
             coref_range.append(coref_json['clusters'])
+            tok_sent.append(coref_json['document'])
 
             if len(coref_json['clusters']) > 0:
                 coref_output.append(1) # coref cluster exists
@@ -65,15 +67,18 @@ class Dataloader(object):
 
         for i in range(0, len(data)):
             if coref_output[i] == 1:
-                if any([((c[0] == c[1]) and (coref_json['document'][c[0]]).lower() in GENDER_PRONOUNS) for c in coref_range[i]]):
-                    gp_output.append(1) # gp pronoun exists
-                else:
-                    gp_output.append(0) # gp pronoun exists
+                for cluster in coref_range[i]:
+                    if any([((c[0] == c[1]) and (tok_sent[i][c[0]]).lower() in GENDER_PRONOUNS) for c in cluster]):
+                        gp_output.append(1) # gp pronoun exists
+
+                    else:
+                        gp_output.append(0) # gp pronoun exists
             else:
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
-        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
+        #assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
         print(gp_output)
+        print(len(gp_output))
         #print(gp_output)
         pronoun_link = self.filter_by_corpus(data, coref_range, gp_output, "pro")
         human_name = self.filter_by_corpus(data, coref_range, gp_output, "name")
