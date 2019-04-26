@@ -45,6 +45,7 @@ class Dataloader(object):
         coref_range = []
         final_sentences = []
         tok_sent = []
+        test_gp = []
         #coref_count = 0
         for line in tqdm(data):
             coref_line = {"document":line.strip()}
@@ -68,34 +69,48 @@ class Dataloader(object):
         for i in range(0, len(data)):
             if coref_output[i] == 1:
                 for cluster in coref_range[i]:
+                    test_gp = []
                     if any([((c[0] == c[1]) and (tok_sent[i][c[0]]).lower() in GENDER_PRONOUNS) for c in cluster]):
-                        gp_output.append(1) # gp pronoun exists
+                        test_gp.append(True)
 
                     else:
-                        gp_output.append(0) # gp pronoun exists
+                        test_gp.append(False) # gp pronoun exists
+                if any(test_gp):
+                    gp_output.append(1)
+                else:
+                    gp_output.append(0)
             else:
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
-        #assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
-        print(gp_output)
-        print(len(gp_output))
+        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
+        print("gp array", gp_output)
+        print("gp_output length", len(gp_output))
         #print(gp_output)
         pronoun_link = self.filter_by_corpus(data, coref_range, gp_output, "pro")
         human_name = self.filter_by_corpus(data, coref_range, gp_output, "name")
         gendered_term = self.filter_by_corpus(data, coref_range, gp_output, "term")
         final_candidates = self.filter_by_corpus(data,coref_range, gp_output,"all")
+
+        assert (len(data) == len(human_name) == len(final_candidates) == len(gendered_term) == len(pronoun_link)), "arrays not same size"
+
         building_df = {'Sentences': data, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
                         'Gendered term': gendered_term, 'Final candidates': final_candidates}
-        #print(gp_output)
-        #print(human_name)
+        print("pronoun link", pronoun_link)
+        print("human name", human_name)
+        print("gendered term", gendered_term)
+        print("final_candidates", final_candidates)
         plotting_df = pd.DataFrame(building_df)
-        #print(plotting_df)
-        for i in range(0, len(data)):
-            if final_candidates == 1:
-                final_sentences.append(data)
-                with open(self.output_name + "final_candidates.tsv", "w+") as f:
-                    for line in final_sentences:
-                        f.write(line + "\n")
+
+        print(plotting_df.values)
+        with open(self.output_name , "w+") as f:
+            for j in plotting_df['Final candidates']:
+                if j == 1:
+                    f.write(plotting_df.loc[plotting_df['Final candidates'], 'Sentences'].iloc[j] + "\n")
+            #for final_candidate in plotting_df['Final candidates']:
+               # for j in range(0 , len(data)):
+                    #if final_candidate == 1:
+                        #f.write(data[j] + "\n")
+
         print("write to file complete")
 
         return plotting_df
@@ -104,7 +119,7 @@ class Dataloader(object):
 #Used temporarily for testing
 if __name__ == '__main__':
     input_path = '../datasets/test_datasets/test_dataset.txt'
-    output_name = "test_finalcandidates"
+    output_name = "winnerHOPE"
 
     dataloader = Dataloader(output_name, filter_by_corpus)
     data = load_general(input_path)
