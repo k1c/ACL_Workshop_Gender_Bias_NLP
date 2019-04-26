@@ -72,7 +72,6 @@ class Dataloader(object):
                     test_gp = []
                     if any([((c[0] == c[1]) and (tok_sent[i][c[0]]).lower() in GENDER_PRONOUNS) for c in cluster]):
                         test_gp.append(True)
-
                     else:
                         test_gp.append(False) # gp pronoun exists
                 if any(test_gp):
@@ -101,17 +100,9 @@ class Dataloader(object):
         print("final_candidates", final_candidates)
         plotting_df = pd.DataFrame(building_df)
 
-        print(plotting_df.values)
-        with open(self.output_name , "w+") as f:
-            for j in plotting_df['Final candidates']:
-                if j == 1:
-                    f.write(plotting_df.loc[plotting_df['Final candidates'], 'Sentences'].iloc[j] + "\n")
-            #for final_candidate in plotting_df['Final candidates']:
-               # for j in range(0 , len(data)):
-                    #if final_candidate == 1:
-                        #f.write(data[j] + "\n")
+        #write to csv
+        plotting_df[plotting_df['Final candidates'] == 1]['Sentences'].to_csv(self.output_name, header=False, index=None)
 
-        print("write to file complete")
 
         return plotting_df
 
