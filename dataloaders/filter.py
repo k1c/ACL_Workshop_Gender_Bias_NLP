@@ -24,18 +24,21 @@ wn_lem = WordNetLemmatizer() # wn_lem.lemmatize()
 """
 
 
-def check_remove(data, word_range, which_type="all"):
+def check_remove(data, tok, word_range, which_type="all"):
     gen_fam_term = ["father", "mother", "son", "daughter", "husband", "wife", "brother", "sister",
                     "grandfather", "grandmother", "grandson", "granddaughter", "uncle", "aunt", "nephew", "niece"]
     gen_term = ["female", "male", "woman", "man", "girl", "boy"]
     pro_lst = ["he", "she", "him", "her", "his", "hers", "himself", "herself"]
 
     result = []
-    tok = word_tokenize(data)
-    print("___SENDING FROM FILTER: ", data)
+    #tok = word_tokenize(data)
     for cluster in word_range:
         # print(name_lst)
+        #print("#### ",word_range)
         if (which_type == "name"):  # check if the cluster has name link
+            #print("&&&&___NAME: ", data)
+            #print("&&&&___NAME_RANGE: ", cluster)
+
             # Check all the instances of human names in the sentence and build "name_lst"
             name_lst = []
             for sent_chunk in ne_chunk(pos_tag(word_tokenize(data))):
@@ -47,10 +50,17 @@ def check_remove(data, word_range, which_type="all"):
                                for c in cluster]))
 
         elif (which_type == "pro"):  # check if the cluster has only pronoun links
+            #print("&&&&___PRO: ", data)
+            #print("&&&&___PRO_RANGE: ", cluster)
+            #print(tok)
+            #[print(c) for c in cluster]
             result.append(all([((c[0] == c[1]) and (tok[c[0]]).lower() in pro_lst) for c in cluster]))
 
 
         elif (which_type == "term"):  # check if the cluster has gendered term
+            #print("&&&&___TERM: ", data)
+            #print("&&&&___TERM_CLUSTER: ", cluster)
+
             for c in cluster:
                 for i in c:
                     word_disam = lesk(tok, tok[i], 'n')  # check definition assigned from word disambiguation
@@ -77,12 +87,12 @@ def check_remove(data, word_range, which_type="all"):
     return any(result)
 
 
-def filter_by_corpus(corpus, coref_ranges, prev_result, which_type="all"):
+def filter_by_corpus(corpus, tok_corpus, coref_ranges, prev_result, which_type="all"):
     this_result = []
     for i in range(0, len(corpus)):
         if prev_result[i] == 1:
             # print(corpus[i],coref_ranges[i])
-            if check_remove(corpus[i], coref_ranges[i], which_type):
+            if check_remove(corpus[i],tok_corpus[i] coref_ranges[i], which_type):
                 this_result.append(0)
             else:
                 this_result.append(1)

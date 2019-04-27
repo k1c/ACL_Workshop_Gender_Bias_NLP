@@ -36,8 +36,7 @@ class Dataloader(object):
         self.filter_by_corpus = filter_by_corpus
         self.predictor = Predictor.from_archive(
             load_archive('https://s3-us-west-2.amazonaws.com/allennlp/models/coref-model-2018.02.05.tar.gz',
-                         weights_file=None,
-                         overrides=""), 'coreference-resolution')
+                weights_file=None,overrides=""), 'coreference-resolution')
 
     def filter_to_file(self, data):
         coref_true = []
@@ -50,6 +49,7 @@ class Dataloader(object):
         final_sentences = []
         tok_sent = []
         test_gp = []
+        no_coref_output = []
         #coref_count = 0
 
         # check if a sentence has coref link
@@ -61,7 +61,8 @@ class Dataloader(object):
                 print("KeyboardInterrup")
                 break
             except:
-                print("problem sentence: ", line)
+                #print("problem sentence: ", line)
+                no_coref_output.append(line)
 
             coref_range.append(coref_json['clusters'])
             tok_sent.append(coref_json['document'])
@@ -92,8 +93,7 @@ class Dataloader(object):
             else:
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
-        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "arrays not same size"
-#ERROR:
+        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "DIM OF COREF & GP OUT NOT SAME"
 
         print("gp_output length", len(gp_output))
 
@@ -102,8 +102,8 @@ class Dataloader(object):
         gendered_term = self.filter_by_corpus(data, coref_range, gp_output, "term")
         final_candidates = self.filter_by_corpus(data,coref_range, gp_output,"all")
 
-        assert (len(data) == len(human_name) == len(final_candidates) == len(gendered_term) == len(pronoun_link)), "arrays not same size"
-#ERROR:
+        assert (len(data) == len(human_name) == len(final_candidates) == len(gendered_term) == len(pronoun_link)),"DIM OF FILTER OUT NOT SAME"
+
 
         building_df = {'Sentences': data, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
                         'Gendered term': gendered_term, 'Final candidates': final_candidates}
