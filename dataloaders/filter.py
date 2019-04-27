@@ -32,7 +32,7 @@ def check_remove(data, word_range, which_type="all"):
 
     result = []
     tok = word_tokenize(data)
-
+    print("___SENDING FROM FILTER: ", data)
     for cluster in word_range:
         # print(name_lst)
         if (which_type == "name"):  # check if the cluster has name link
