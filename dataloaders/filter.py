@@ -80,9 +80,9 @@ def check_remove(data, tok, word_range, which_type="all"):
                 else:
                     continue
         else:  # check all conditions at the same time
-            result.append(any([check_remove(data, word_range, which_type="name"),
-                               check_remove(data, word_range, which_type="pro"),
-                               check_remove(data, word_range, which_type="term")]))
+            result.append(any([check_remove(data, tok, word_range, which_type="name"),
+                               check_remove(data, tok, word_range, which_type="pro"),
+                               check_remove(data, tok, word_range, which_type="term")]))
 
     return any(result)
 
@@ -92,7 +92,7 @@ def filter_by_corpus(corpus, tok_corpus, coref_ranges, prev_result, which_type="
     for i in range(0, len(corpus)):
         if prev_result[i] == 1:
             # print(corpus[i],coref_ranges[i])
-            if check_remove(corpus[i],tok_corpus[i] coref_ranges[i], which_type):
+            if check_remove(corpus[i],tok_corpus[i], coref_ranges[i], which_type):
                 this_result.append(0)
             else:
                 this_result.append(1)

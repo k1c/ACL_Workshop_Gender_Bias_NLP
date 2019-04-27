@@ -80,16 +80,14 @@ class Dataloader(object):
                     test_gp = []
                     if any([((c[0] == c[1]) and (tok_sent[i][c[0]]).lower() in GENDER_PRONOUNS) for c in cluster]):
                         test_gp.append(True)
-                        #gp_output.append(1)
                     else:
-                        #gp_output.append(0)
                         test_gp.append(False) # gp pronoun exists
-                       
+       
                 if any(test_gp):
                     gp_output.append(1)
                 else:
                     gp_output.append(0)
-                
+
             else:
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
@@ -97,10 +95,12 @@ class Dataloader(object):
 
         print("gp_output length", len(gp_output))
 
-        pronoun_link = self.filter_by_corpus(data, coref_range, gp_output, "pro")
-        human_name = self.filter_by_corpus(data, coref_range, gp_output, "name")
-        gendered_term = self.filter_by_corpus(data, coref_range, gp_output, "term")
-        final_candidates = self.filter_by_corpus(data,coref_range, gp_output,"all")
+        pronoun_link = self.filter_by_corpus(data, tok_sent, coref_range, gp_output, "pro")
+        human_name = self.filter_by_corpus(data, tok_sent, coref_range, gp_output, "name")
+        gendered_term = self.filter_by_corpus(data, tok_sent, coref_range, gp_output, "term")
+        final_candidates = self.filter_by_corpus(data, tok_sent,coref_range, gp_output,"all")
+
+        print("FILTER PASSED WITH NO ERROR")
 
         assert (len(data) == len(human_name) == len(final_candidates) == len(gendered_term) == len(pronoun_link)),"DIM OF FILTER OUT NOT SAME"
 
