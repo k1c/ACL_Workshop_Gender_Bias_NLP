@@ -40,9 +40,9 @@ def preprocess_gutenberg(data):
         text = f.read()
     text = re.sub(r'(M\w{1,2})\.', r'\1', text)  # removes the '.' in Mr. and Mrs.
     sentences = sent_tokenize(text)
-    new_sentences = [re.sub(r'\n+', ' ', s) for s in sentences]
-
-    for sentence in new_sentences:
+    new_sentences = [re.sub(r'\n+', ' ', s) for s in sentences]   # remove \n (line break)
+    clean_s = [re.sub('"', '', quotation) for quotation in new_sentences] #remove quotation marks
+    for sentence in clean_s:
         wordcount = len(sentence.split())
         if sentence != '' and wordcount > 2:   # wordcount of 2 or lower doesn't make sense for coref
             clean_sentences.append(sentence)
