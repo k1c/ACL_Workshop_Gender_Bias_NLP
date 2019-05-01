@@ -64,7 +64,6 @@ def pool_sentence_embs(path, pooling_layer=-2, pooling_strategy='mean'):
 def main(path):
     embs = pool_sentence_embs(path)
     print("Dimension", embs.shape)
-    # target = [0 for i in range(embs.shape[0])]
     target = [1., 0., 0., 1., 1., 1., 0., 1., 0., 1., 1., 0., 0., 1., 0., 0., 0., 0., 0., 1.] + [0. for i in range(22)]
     print(len(target))
     embeddings = TSNE(n_jobs=4, random_state=1).fit_transform(embs) #number sentence X dimension
