@@ -37,6 +37,7 @@ import numpy as np
 from MulticoreTSNE import MulticoreTSNE as TSNE
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+import pandas as pd
 
 def pool_sentence_embs(path, pooling_layer=-2, pooling_strategy='mean'):
     embs = []
@@ -63,17 +64,23 @@ def pool_sentence_embs(path, pooling_layer=-2, pooling_strategy='mean'):
 
 def main(path):
     embs = pool_sentence_embs(path)
-    print("Dimension", embs.shape)
-    target = [1., 0., 0., 1., 1., 1., 0., 1., 0., 1., 1., 0., 0., 1., 0., 0., 0., 0., 0., 1.] + [0. for i in range(22)]
+    print("Dimension", embs.shape) #number sentences X BERT hidden dimension (768)
+    df = pd.read_csv('master_df_ALL.csv', encoding ='utf - 8', index_col = False)
+    filter_name = 'Coreference'
+    target = df[filter_name]
+    #df['Sentences'].to_csv("master_ALL", header=None, index=False)
+    #target = [1., 0., 0., 1., 1., 1., 0., 1., 0., 1., 1., 0., 0., 1., 0., 0., 0., 0., 0., 1.] + [0. for i in range(22)]
     print(len(target))
-    embeddings = TSNE(n_jobs=4, random_state=1).fit_transform(embs) #number sentence X dimension
+    embeddings = TSNE(n_jobs=4, random_state=1).fit_transform(embs) #t-SNE reduces 768 dimension to 2D or 3D
     vis_x = embeddings[:, 0]
     vis_y = embeddings[:, 1]
     plt.scatter(vis_x, vis_y, c=target, cmap=ListedColormap(["blue", "red"]), marker='.', s=50)
-    plt.title("BERT_tsne (red=A1, blue=other)")
+    plt.title(filter_name+" filter (red=passed filter, blue=did not pass filter)")
     # plt.colorbar(ticks=range(10))
     # plt.clim(-0.5, 9.5)
-    plt.show()
+    plt.ioff()
+    #plt.show()
+    plt.savefig(filter_name)
 
 if __name__ == '__main__':
-    main('BERT_feature_extraction.json')
+    main('master_all.json')
