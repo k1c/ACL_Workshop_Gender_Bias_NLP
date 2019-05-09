@@ -41,7 +41,7 @@ def check_remove(data, tok, word_range, which_type="all"):
 
             # Check all the instances of human names in the sentence and build "name_lst"
             name_lst = []
-            for sent_chunk in ne_chunk(pos_tag(word_tokenize(data))):
+            for sent_chunk in ne_chunk(pos_tag(tok)):
                 if hasattr(sent_chunk, 'label'):
                     if (sent_chunk.label() == "PERSON"):
                         name_lst.append(' '.join(c[0] for c in sent_chunk))
