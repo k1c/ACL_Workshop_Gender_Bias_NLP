@@ -33,3 +33,9 @@ python3 allennlp_models.py \
     https://s3-us-west-2.amazonaws.com/allennlp/models/srl-model-2018.02.27.tar.gz \
     [your_dataset].* --output-file [your_dataset]_srl.json
 ```
+
+Extract features from BERT at this location `./pytorch-pretrained-BERT/examples/extract_features.py`
+
+```
+python extract_features.py --input_file path_to_input_file --output_file output_file_name.json --bert_model bert-base-cased --layers -2
+```
