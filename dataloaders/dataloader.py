@@ -121,8 +121,8 @@ class Dataloader(object):
                 if final_candidates[i] == 1:
                     marked_data.append(TreebankWordDetokenizer().detokenize(insert_tags(tok_sent[i], coref_range[i])))
 
-            marked_df = pd.DataFrame({'Marked Sentences': marked_data})
-            marked_df.to_csv(self.final_candidates_filename + "_marked", header=False, index=None)
+            marked_df = pd.DataFrame({'text': marked_data}) # Turk needs a header called 'text'
+            marked_df.to_csv(self.final_candidates_filename + "_marked.csv", header=True, index=None)
 
         return plotting_df
 
