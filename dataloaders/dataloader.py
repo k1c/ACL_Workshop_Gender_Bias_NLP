@@ -11,9 +11,11 @@ from nltk.tokenize import sent_tokenize
 from nltk import ne_chunk, pos_tag
 from nltk.tokenize import sent_tokenize, word_tokenize
 pp = pprint.PrettyPrinter(indent=1)
+from nltk.tokenize.treebank import TreebankWordDetokenizer
 
 #from loaders import load_IMDB, load_gluternberg
 from filter import check_remove, filter_by_corpus
+from highlight_tagger import insert_tags
 from loaders import load_IMDB, load_gutenberg, load_general
 
 #Use the NLTK Downloader to obtain the resources that you need for this script:
@@ -29,8 +31,8 @@ from loaders import load_IMDB, load_gutenberg, load_general
     If you have a clean txt that is ready for testing, use the load_general loader
 """
 class Dataloader(object):
-    def __init__(self, output_candidates, filter_by_corpus, output_df, encoding="utf-8"):
-        self.output_candidates = output_candidates
+    def __init__(self, final_candidates_filename, filter_by_corpus, output_df, encoding="utf-8"):
+        self.final_candidates_filename = final_candidates_filename
         self.encoding = encoding
         self.output_df = output_df
         self.filter_by_corpus = filter_by_corpus
@@ -38,9 +40,9 @@ class Dataloader(object):
             load_archive('https://s3-us-west-2.amazonaws.com/allennlp/models/coref-model-2018.02.05.tar.gz',
                 weights_file=None,overrides=""), 'coreference-resolution')
 
-    def filter_to_file(self, data):
+    # is_data_marked: set to True if you want your final candidate to contain html tags that will highlight the clusters
+    def filter_to_file(self, data, is_data_marked):
         coref_true = []
-        f = open(self.output_candidates, "w+")
 
         GENDER_PRONOUNS = ['he','she','him','her','his','hers','himself','herself']
         coref_output = []
@@ -91,7 +93,7 @@ class Dataloader(object):
             else:
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
 
-        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range)), "DIM OF COREF & GP OUT NOT SAME"
+        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range) == len(tok_sent)), "DIM OF COREF & GP OUT NOT SAME"
 
         print("gp_output length", len(gp_output))
 
@@ -104,25 +106,36 @@ class Dataloader(object):
 
         assert (len(data) == len(human_name) == len(final_candidates) == len(gendered_term) == len(pronoun_link)),"DIM OF FILTER OUT NOT SAME"
 
-
         building_df = {'Sentences': data, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
                         'Gendered term': gendered_term, 'Final candidates': final_candidates}
 
         plotting_df = pd.DataFrame(building_df)
 
         #write to csv
-        plotting_df[plotting_df['Final candidates'] == 1]['Sentences'].to_csv(self.output_candidates, header=False, index=None)
-        plotting_df.to_csv(self.output_df, header=True, index=None )
+        plotting_df[plotting_df['Final candidates'] == 1]['Sentences'].to_csv(self.final_candidates_filename, header=False, index=None)
+        plotting_df.to_csv(self.output_df, header=True, index=None)
+
+        if is_data_marked:
+            marked_data = []
+            for i in range(0, len(final_candidates)):
+                if final_candidates[i] == 1:
+                    marked_data.append(TreebankWordDetokenizer().detokenize(insert_tags(tok_sent[i], coref_range[i])))
+
+            marked_df = pd.DataFrame({'Marked Sentences': marked_data})
+            marked_df.to_csv(self.final_candidates_filename + "_marked", header=False, index=None)
 
         return plotting_df
 
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    input_path = '../datasets/gutenberg/pg6167.txt'  ## set up for gutenberg
-    output_candidates = "winnerHOPE"
-    output_df = "AllFilterData"
+    input_path = '../datasets/gutenberg/196_gutenberg_clean.csv'  ## set up for gutenberg
+    final_candidates_filename = "196_gutenberg_clean"
+    output_df = "196_gutenberg_clean_df"
+    is_data_marked = True #set to True if you want your final candidate to contain html tags that will highlight the clusters
 
-    dataloader = Dataloader(output_candidates, filter_by_corpus, output_df)
+    dataloader = Dataloader(final_candidates_filename, filter_by_corpus, output_df)
     data = load_gutenberg(input_path)
-    dataloader.filter_to_file(data)
+    dataloader.filter_to_file(data, is_data_marked)
+
+
