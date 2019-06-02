@@ -13,3 +13,4 @@ def insert_tags(tok_sent, word_range):
         for (start_index, end_index) in cluster:
             tok_sent[start_index]="<mark>"+tok_sent[start_index]
             tok_sent[end_index]=tok_sent[end_index]+"</mark>"
+    return tok_sent
