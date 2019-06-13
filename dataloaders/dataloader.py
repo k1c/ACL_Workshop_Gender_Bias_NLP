@@ -132,7 +132,7 @@ if __name__ == '__main__':
     input_path = '../datasets/gutenberg/196_gutenberg_clean.csv'  ## set up for gutenberg
     final_candidates_filename = "196_gutenberg_clean"
     output_df = "196_gutenberg_clean_df"
-    is_data_marked = True #set to True if you want your final candidate to contain html tags that will highlight the clusters
+    is_data_marked = True #set to True if you want your final candidate sentences to contain html tags that will highlight the clusters
 
     dataloader = Dataloader(final_candidates_filename, filter_by_corpus, output_df)
     data = load_gutenberg(input_path)
