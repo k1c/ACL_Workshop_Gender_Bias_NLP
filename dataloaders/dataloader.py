@@ -106,7 +106,7 @@ class Dataloader(object):
 
         assert (len(data) == len(human_name) == len(final_candidates) == len(gendered_term) == len(pronoun_link)),"DIM OF FILTER OUT NOT SAME"
 
-        building_df = {'Sentences': data, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
+        building_df = {'Sentences': data, 'Tok Sentences': tok_sent, 'Coref Ranges': coref_range, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
                         'Gendered term': gendered_term, 'Final candidates': final_candidates}
 
         plotting_df = pd.DataFrame(building_df)
@@ -119,7 +119,7 @@ class Dataloader(object):
             marked_data = []
             for i in range(0, len(final_candidates)):
                 if final_candidates[i] == 1:
-                    marked_data.append(TreebankWordDetokenizer().detokenize(insert_tags(tok_sent[i], coref_range[i])))
+                    marked_data.append(TreebankWordDetokenizer().detokenize(insert_tags(tok_sent[i], coref_range[i], GENDER_PRONOUNS)))
 
             marked_df = pd.DataFrame({'text': marked_data}) # Turk needs a header called 'text'
             marked_df.to_csv(self.final_candidates_filename + "_marked.csv", header=True, index=None)
