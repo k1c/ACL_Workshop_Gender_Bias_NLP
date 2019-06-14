@@ -8,8 +8,8 @@
         sentence with <span> </span> tags at the start and end of the word range
         ie. ['"<span style='background-color:yellow"A', 'nurse</span>', 'must', 'always', 'take', 'care', 'of', '"<span style='background-color:yellow"her</span>', 'patients']
 
-insert_tags() will only highlight a cluster if it contains a gendered pronoun.
-If there is more than one cluster with a gendered pronoun, then it will highlight the clusters in different colors.
+insert_tags() will only highlight a cluster if it contains a gender pronoun.
+If there is more than one cluster with a gender pronoun, then it will highlight the clusters in different colors.
 Note: A max of 8 different colors are possible (way more than currently needed), but if you want to add more colors,
 go to https://www.w3schools.com/colors/colors_names.asp and add it to the background_colors array.
 """
