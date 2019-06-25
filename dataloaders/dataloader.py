@@ -55,7 +55,7 @@ class Dataloader(object):
         #coref_count = 0
 
         # check if a sentence has coref link
-        for line in tqdm(data):
+        for line in tqdm(data[1]):
             coref_line = {"document":line.strip()}
             try:
                 coref_json = self.predictor.predict_json(coref_line)
@@ -76,7 +76,7 @@ class Dataloader(object):
                 coref_output.append(0) # coref cluster does not exist
 
         # check 
-        for i in range(0, len(data)):
+        for i in range(0, len(data[1])):
             if coref_output[i] == 1:
                 for cluster in coref_range[i]:
                     test_gp = []
@@ -92,28 +92,60 @@ class Dataloader(object):
 
             else:
                 gp_output.append(0) # coref cluster doesn't exists so don't look for gp pronoun
-
-        assert (len(data) == len(coref_output) == len(gp_output) == len(coref_range) == len(tok_sent)), "DIM OF COREF & GP OUT NOT SAME"
+        print(len(data[1]))
+        print(len(coref_output))
+        print(len(gp_output))
+        print(len(coref_range))
+        print(len(tok_sent))
+        assert (len(data[1]) == len(coref_output) == len(gp_output) == len(coref_range) == len(tok_sent)), "DIM OF COREF & GP OUT NOT SAME"
 
         print("gp_output length", len(gp_output))
 
-        pronoun_link = self.filter_by_corpus(data, tok_sent, coref_range, gp_output, "pro")
-        human_name = self.filter_by_corpus(data, tok_sent, coref_range, gp_output, "name")
-        gendered_term = self.filter_by_corpus(data, tok_sent, coref_range, gp_output, "term")
-        final_candidates = self.filter_by_corpus(data, tok_sent,coref_range, gp_output,"all")
+        pronoun_link = self.filter_by_corpus(data[1], tok_sent, coref_range, gp_output, "pro")
+        human_name = self.filter_by_corpus(data[1], tok_sent, coref_range, gp_output, "name")
+        gendered_term = self.filter_by_corpus(data[1], tok_sent, coref_range, gp_output, "term")
+        final_candidates = self.filter_by_corpus(data[1], tok_sent,coref_range, gp_output,"all")
 
         print("FILTER PASSED WITH NO ERROR")
 
-        assert (len(data) == len(human_name) == len(final_candidates) == len(gendered_term) == len(pronoun_link)),"DIM OF FILTER OUT NOT SAME"
+        print(len(data[1]),len(human_name),len(final_candidates),len(gendered_term),len(pronoun_link))
 
-        building_df = {'Sentences': data, 'Tok Sentences': tok_sent, 'Coref Ranges': coref_range, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
+        assert (len(data[1]) == len(human_name) == len(final_candidates) == len(gendered_term) == len(pronoun_link)),"DIM OF FILTER OUT NOT SAME"
+
+
+
+        building_df = {'Sentences': data[1], 'index': data[0], 'Corpus': data[2], 'Tok Sentences': tok_sent, 'Coref Ranges': coref_range, 'Coreference': coref_output, 'Gender pronoun': gp_output, 'Gender link': pronoun_link,'Human Name': human_name,
                         'Gendered term': gendered_term, 'Final candidates': final_candidates}
 
         plotting_df = pd.DataFrame(building_df)
+        #print(plotting_df.head(5)) #check format
 
+        final_sents = []
+
+        for i in range(0,len(final_candidates)):
+            if final_candidates[i] == 1:
+                final_sents.append([data[0][i], data[1][i]])
+
+        df = pd.DataFrame(final_sents)
+
+        #print(df.head(5)) #check format
+
+        #print(len(final_sentence_list), "final sentence list")
+        #print(len(final_index), "final index list")
+
+        #print(final_sentence_list)
+
+        #final_df = {'Sentences': final_sentence_list, 'Index': final_index}
+        # = pd.DataFrame(final_df)
+        #print(plotting_df.head[5])
         #write to csv
-        plotting_df[plotting_df['Final candidates'] == 1]['Sentences'].to_csv(self.final_candidates_filename, header=False, index=None)
+        #plotting_df[plotting_df['Final candidates'] == 1]['Sentences'].to_csv(self.final_candidates_filename, header=False, index=None)
+
+
         plotting_df.to_csv(self.output_df, header=True, index=None)
+        df.to_csv(self.final_candidates_filename, header=True, index=None)
+        #final_df2.to_csv(self.final_candidates_filename, header=True, index= None)
+
 
         if is_data_marked:
             marked_data = []
@@ -124,15 +156,15 @@ class Dataloader(object):
             marked_df = pd.DataFrame({'text': marked_data}) # Turk needs a header called 'text'
             marked_df.to_csv(self.final_candidates_filename + "_marked.csv", header=True, index=None)
 
-        return plotting_df
+        return plotting_df, df
 
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    input_path = '../datasets/gutenberg/196_gutenberg_clean.csv'  ## set up for gutenberg
-    final_candidates_filename = "196_gutenberg_clean"
-    output_df = "196_gutenberg_clean_df"
-    is_data_marked = True #set to True if you want your final candidate sentences to contain html tags that will highlight the clusters
+    input_path = '../datasets/gutenberg/clean_gutenbergs/master_clean_true.csv'  ## set up for gutenberg
+    final_candidates_filename = "master_finalcandidates_new"
+    output_df = "master_allfilters_df"
+    is_data_marked = False #set to True if you want your final candidate sentences to contain html tags that will highlight the clusters
 
     dataloader = Dataloader(final_candidates_filename, filter_by_corpus, output_df)
     data = load_gutenberg(input_path)
