@@ -242,7 +242,7 @@ class Dataloader(object):
 
 #Used temporarily for testing
 if __name__ == '__main__':
-    input_path = '../datasets/test_datasets/pg6167.txt'
+    input_path = '../datasets/IMDB/imdb1000.txt'
     output_name= "businesshints"
 
     dataloader = Dataloader(input_path, output_name)
